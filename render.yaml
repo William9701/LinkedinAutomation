@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: linkedin-automation
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py schedule
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: GEMINI_API_KEY
+        value: AIzaSyAXiS14oBWmJwPSR5rqxbjeHPEBkra5lIQ
+      - key: LINKEDIN_ACCESS_TOKEN
+        value: AQUJ6LkTbRRpSenfCBJ6Enf0pQJaHVwPLy4cu2l2U1j4e4OpxIaHrpUzMJm1EEy0v73LXmVutBdjcXMOllJeDIWGPcjThLQfFwF5Fv8dxE9LwKCZ7_rv1k6HJuEINWghrxL9wVY8eAQruCKkBGy6VvmXnMkxoYcHGX2RmZVDH5MpYks32nghFGfK209Q_Nhj9Bc1BviqD9tHTNBgGuYBavhQr1894vSTRHMNQKI4f20vu41A-OrVGOPWlAWZ7y8dXXWOEzp3qG52CUHuNjBO0hEUDnENeVuK3GRZZ36hsa4fOzjaVhdVMtoVG98TAvo4ovFzrGPiXdo6awGyLTObD1QYlijj1Q
+      - key: MORNING_POST_TIME
+        value: "09:00"
+      - key: EVENING_POST_TIME
+        value: "19:00"
+      - key: TIMEZONE
+        value: "UTC"
