@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 from pathlib import Path
 
@@ -8,6 +9,7 @@ from src.content_generator import ContentGenerator
 from src.image_generator import ImageGenerator
 from src.linkedin_poster import LinkedInPoster
 from src.scheduler import PostScheduler
+from server import start_health_server
 
 # Configure logging
 logging.basicConfig(
@@ -108,6 +110,10 @@ class LinkedInAutomation:
     def run_scheduled(self):
         """Run the automation on a schedule"""
         logger.info("Starting LinkedIn Automation with scheduler...")
+
+        # Start health check server for Render
+        port = int(os.environ.get('PORT', 10000))
+        start_health_server(port)
 
         # Schedule daily posts
         self.scheduler.schedule_daily_posts(
