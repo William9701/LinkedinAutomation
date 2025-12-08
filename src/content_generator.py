@@ -26,18 +26,34 @@ class ContentGenerator:
             Generated post content as string
         """
         try:
+            # Extract clean title without suffixes like "Production Guide", "Battle-Tested", etc.
+            clean_title = topic['title']
+            # Remove common suffixes
+            suffixes_to_remove = [
+                ': Production Battle-Tested Insights',
+                ': Production Guide',
+                ': Battle-Tested Insights',
+                ': Production Reality',
+                ': Production Performance Reality',
+                'Production ',
+                'Battle-Tested '
+            ]
+            for suffix in suffixes_to_remove:
+                clean_title = clean_title.replace(suffix, '')
+            clean_title = clean_title.strip(': ')
+
             enhanced_prompt = f"""
 {topic['prompt']}
 
 CRITICAL FORMATTING REQUIREMENTS FOR LINKEDIN:
 
 HEADER FORMAT (FIRST 2 LINES - VERY IMPORTANT):
-- Line 1: Start with 1-2 relevant emojis, then the topic title in ALL CAPS
+- Line 1: Start with 1-2 relevant emojis, then the topic title wrapped in **bold** (using **Title Here**)
 - Line 2: Leave blank
 - Line 3: Start the actual content
 
 Example header format:
-🚀 FASTAPI VS FLASK: PRODUCTION INSIGHTS
+🚀 **FASTAPI VS FLASK**
 
 In my experience building high-scale APIs...
 
@@ -50,15 +66,16 @@ CONTENT REQUIREMENTS:
 6. End with an engaging question to encourage comments
 
 LINKEDIN FORMATTING RULES - CRITICAL:
-- DO NOT use Markdown (no **, __, ~~, etc.) - LinkedIn shows these as literal characters
+- USE **bold** for the title ONLY (wrap title in **Title Here**)
+- The title should be in ALL CAPS and wrapped in **bold**
 - DO NOT use headers with # symbols
 - DO NOT use code blocks with backticks
-- The ONLY thing in ALL CAPS should be the title in the header
-- Use line breaks and spacing instead of formatting
+- Use line breaks and spacing for structure
 - Use → or • for bullet points if needed
-- Keep it clean, professional, plain text
+- Keep it clean, professional
 - DO NOT include hashtags in the content (they will be added separately)
 - NEVER mention "8 years" or any specific years of experience in the post content
+- DO NOT include words like "Production Guide", "Battle-Tested", "Production Reality" etc in the title
 
 EMOJI GUIDELINES FOR HEADER:
 - Choose 1-2 emojis that relate to the topic category
@@ -73,7 +90,7 @@ EMOJI GUIDELINES FOR HEADER:
 TONE: Professional but conversational, like talking to a senior engineer colleague over coffee.
 
 Category: {topic['category']}
-Topic: {topic['title']}
+Clean Topic Title (use this for the header): {clean_title}
 """
 
             # Add special day context if applicable

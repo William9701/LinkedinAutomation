@@ -107,13 +107,27 @@ class LinkedInAutomation:
             logger.error(f"Error in create_and_post: {str(e)}", exc_info=True)
             return False
 
-    def run_scheduled(self):
+    def run_scheduled(self, skip_startup_post=False):
         """Run the automation on a schedule"""
         logger.info("Starting LinkedIn Automation with scheduler...")
 
         # Start health check server for Render
         port = int(os.environ.get('PORT', 10000))
         start_health_server(port)
+
+        # Post immediately on startup to verify system is working
+        if not skip_startup_post:
+            logger.info("=" * 60)
+            logger.info("STARTUP TEST POST - Posting immediately to verify system works...")
+            logger.info("=" * 60)
+            success = self.create_and_post()
+            if success:
+                logger.info("✅ Startup test post successful! System is working correctly.")
+            else:
+                logger.error("❌ Startup test post failed! Check the logs above for errors.")
+            logger.info("=" * 60)
+            # Wait a bit before starting scheduler
+            time.sleep(5)
 
         # Schedule daily posts
         self.scheduler.schedule_daily_posts(
