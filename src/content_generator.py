@@ -26,54 +26,56 @@ class ContentGenerator:
             Generated post content as string
         """
         try:
+            # Extract clean title without suffixes like "Production Guide", "Battle-Tested", etc.
+            clean_title = topic['title']
+            # Remove common suffixes
+            suffixes_to_remove = [
+                ': Production Battle-Tested Insights',
+                ': Production Guide',
+                ': Battle-Tested Insights',
+                ': Production Reality',
+                ': Production Performance Reality',
+                'Production ',
+                'Battle-Tested '
+            ]
+            for suffix in suffixes_to_remove:
+                clean_title = clean_title.replace(suffix, '')
+            clean_title = clean_title.strip(': ')
+
             enhanced_prompt = f"""
 {topic['prompt']}
 
 CRITICAL FORMATTING REQUIREMENTS FOR LINKEDIN:
 
 HEADER FORMAT (FIRST 2 LINES - VERY IMPORTANT):
-- Line 1: Start with 1-2 relevant emojis, then the topic title in a compelling way
+- Line 1: Start with 1-2 relevant emojis, then the topic title wrapped in **bold** (using **Title Here**)
 - Line 2: Leave blank
 - Line 3: Start the actual content with a hook
 
 Example header format:
-💡 Why Your App Might Be Slower Than It Should Be
+🚀 **FASTAPI VS FLASK**
 
-Last week, I discovered something that changed how I build APIs...
+In my experience building high-scale APIs...
 
-CONTENT REQUIREMENTS - ACCESSIBLE & ENGAGING:
-1. Write in first person, but as someone sharing a discovery or story ("I recently learned", "Here's what surprised me")
-2. Start with a HOOK - something relatable, surprising, or curious
-3. Use ANALOGIES and REAL-WORLD COMPARISONS - tech concepts explained through everyday things
-4. Use short paragraphs (2-3 sentences max) for easy mobile reading
-5. Make it conversational - like explaining to a smart friend at a coffee shop
-6. Include specific examples, but explain WHY they matter in simple terms
-7. Keep under 1300 characters for optimal LinkedIn algorithm performance
-8. End with a thought-provoking question that ANYONE can answer (not just devs)
-
-STORYTELLING STRUCTURE:
-1. Hook (relatable opening or surprising fact)
-2. The Discovery (what you learned/observed)
-3. Why It Matters (practical impact in simple terms)
-4. Call to Action (engaging question)
-
-LANGUAGE STYLE:
-- Avoid heavy jargon - explain technical terms simply
-- Use "you" and "your" to make it personal
-- Paint pictures with words - make concepts visual
-- Add human emotion and experience
-- Make non-technical people feel welcome
+CONTENT REQUIREMENTS:
+1. Write in first person as a senior/experienced backend developer (DO NOT mention "8 years" or any specific number of years in the post)
+2. Use short paragraphs (2-3 sentences max) for easy mobile reading
+3. Include specific technical details, real metrics, or code patterns
+4. Add blank lines between sections for visual breathing room
+5. Keep under 1300 characters for optimal LinkedIn algorithm performance
+6. End with an engaging question to encourage comments
 
 LINKEDIN FORMATTING RULES - CRITICAL:
-- DO NOT use Markdown (no **, __, ~~, etc.) - LinkedIn shows these as literal characters
+- USE **bold** for the title ONLY (wrap title in **Title Here**)
+- The title should be in ALL CAPS and wrapped in **bold**
 - DO NOT use headers with # symbols
-- DO NOT use code blocks with backticks (```)
-- For code snippets: Use simple indentation (4 spaces) with plain text
-- Use line breaks and spacing instead of formatting
+- DO NOT use code blocks with backticks
+- Use line breaks and spacing for structure
 - Use → or • for bullet points if needed
-- Keep it clean, professional, plain text
+- Keep it clean, professional
 - DO NOT include hashtags in the content (they will be added separately)
-- If code is complex, reference it briefly and let the image show the details
+- NEVER mention "8 years" or any specific years of experience in the post content
+- DO NOT include words like "Production Guide", "Battle-Tested", "Production Reality" etc in the title
 
 EMOJI GUIDELINES FOR HEADER:
 - Choose 1-2 emojis that relate to the feeling/benefit, not just the tech
@@ -87,20 +89,7 @@ EMOJI GUIDELINES FOR HEADER:
 TONE: Friendly, curious, and accessible. Like a knowledgeable friend sharing something cool they discovered. NOT resume-speak or LinkedIn-corporate.
 
 Category: {topic['category']}
-Topic: {topic['title']}
-
-EXAMPLE (Accessible Style):
-💡 THE CHECKOUT LANE PRINCIPLE
-
-Think about the last time you were at a grocery store. Express lane vs regular lane - same groceries, different wait times.
-
-That's exactly how choosing between different API frameworks works. Some are built like express lanes (FastAPI) - they handle one thing at a time super fast. Others are like regular lanes (traditional frameworks) - they wait for each task to finish before starting the next.
-
-The difference? In a busy app, it's like having 100 people in line. Express lanes keep things moving.
-
-The surprising part: Most apps don't need express lanes at all. It's about matching the tool to your actual traffic.
-
-What's your go-to approach - speed optimization or simplicity first?
+Clean Topic Title (use this for the header): {clean_title}
 """
 
             # Add special day context if applicable
