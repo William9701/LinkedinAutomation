@@ -32,6 +32,7 @@ class LinkedInPoster:
                 user_data = response.json()
                 # Store the sub (subject) which is the user ID
                 self._user_id = user_data.get('sub')
+                logger.info(f"Retrieved user info - sub: {self._user_id}")
                 return user_data
             else:
                 logger.error(f"Failed to get user info: {response.status_code} - {response.text}")
@@ -198,10 +199,12 @@ class LinkedInPoster:
                 logger.error("Could not retrieve user info")
                 return None
 
-            user_id = user_info.get("id")
+            user_id = self._user_id or user_info.get("sub")
             if not user_id:
-                logger.error("User ID not found")
+                logger.error(f"User ID not found. user_info: {user_info}, _user_id: {self._user_id}")
                 return None
+
+            logger.info(f"Using user_id: {user_id}")
 
             # Upload image
             image_asset = self.upload_image(image_path, user_id)

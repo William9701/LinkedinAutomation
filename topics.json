@@ -1118,7 +1118,7 @@
       "category": "Architecture - Architecture Styles",
       "title": "Clean architecture: When and How to Use",
       "prompt": "As an 8-year veteran backend developer, write a detailed professional LinkedIn post about Clean architecture in system architecture. Discuss when to use it, implementation considerations, common mistakes, scalability implications, alternatives, and real-world examples from production systems. Be practical and balanced. Target senior engineers and architects.",
-      "used": false
+      "used": true
     },
     {
       "id": 161,

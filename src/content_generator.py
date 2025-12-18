@@ -32,48 +32,75 @@ class ContentGenerator:
 CRITICAL FORMATTING REQUIREMENTS FOR LINKEDIN:
 
 HEADER FORMAT (FIRST 2 LINES - VERY IMPORTANT):
-- Line 1: Start with 1-2 relevant emojis, then the topic title in ALL CAPS
+- Line 1: Start with 1-2 relevant emojis, then the topic title in a compelling way
 - Line 2: Leave blank
-- Line 3: Start the actual content
+- Line 3: Start the actual content with a hook
 
 Example header format:
-🚀 FASTAPI VS FLASK: PRODUCTION INSIGHTS
+💡 Why Your App Might Be Slower Than It Should Be
 
-In my experience building high-scale APIs...
+Last week, I discovered something that changed how I build APIs...
 
-CONTENT REQUIREMENTS:
-1. Write in first person as a senior/experienced backend developer (DO NOT mention "8 years" or any specific number of years in the post)
-2. Use short paragraphs (2-3 sentences max) for easy mobile reading
-3. Include specific technical details, real metrics, or code patterns
-4. Add blank lines between sections for visual breathing room
-5. Keep under 1300 characters for optimal LinkedIn algorithm performance
-6. End with an engaging question to encourage comments
+CONTENT REQUIREMENTS - ACCESSIBLE & ENGAGING:
+1. Write in first person, but as someone sharing a discovery or story ("I recently learned", "Here's what surprised me")
+2. Start with a HOOK - something relatable, surprising, or curious
+3. Use ANALOGIES and REAL-WORLD COMPARISONS - tech concepts explained through everyday things
+4. Use short paragraphs (2-3 sentences max) for easy mobile reading
+5. Make it conversational - like explaining to a smart friend at a coffee shop
+6. Include specific examples, but explain WHY they matter in simple terms
+7. Keep under 1300 characters for optimal LinkedIn algorithm performance
+8. End with a thought-provoking question that ANYONE can answer (not just devs)
+
+STORYTELLING STRUCTURE:
+1. Hook (relatable opening or surprising fact)
+2. The Discovery (what you learned/observed)
+3. Why It Matters (practical impact in simple terms)
+4. Call to Action (engaging question)
+
+LANGUAGE STYLE:
+- Avoid heavy jargon - explain technical terms simply
+- Use "you" and "your" to make it personal
+- Paint pictures with words - make concepts visual
+- Add human emotion and experience
+- Make non-technical people feel welcome
 
 LINKEDIN FORMATTING RULES - CRITICAL:
 - DO NOT use Markdown (no **, __, ~~, etc.) - LinkedIn shows these as literal characters
 - DO NOT use headers with # symbols
-- DO NOT use code blocks with backticks
-- The ONLY thing in ALL CAPS should be the title in the header
+- DO NOT use code blocks with backticks (```)
+- For code snippets: Use simple indentation (4 spaces) with plain text
 - Use line breaks and spacing instead of formatting
 - Use → or • for bullet points if needed
 - Keep it clean, professional, plain text
 - DO NOT include hashtags in the content (they will be added separately)
-- NEVER mention "8 years" or any specific years of experience in the post content
+- If code is complex, reference it briefly and let the image show the details
 
 EMOJI GUIDELINES FOR HEADER:
-- Choose 1-2 emojis that relate to the topic category
-- Backend/API: 🚀 ⚡ 🔧 💻 🛠️ 🔥
-- Database: 💾 🗄️ 📊 🔍
-- DevOps/Cloud: ☁️ 🐳 ⚙️ 🔄 📦
-- Security: 🔒 🛡️ 🔐
-- AI/ML: 🤖 🧠 ✨
-- Performance: ⚡ 🚀 📈
-- Architecture: 🏗️ 🔧 📐
+- Choose 1-2 emojis that relate to the feeling/benefit, not just the tech
+- Discovery/Learning: 💡 ✨ 🎯 🔍 💭
+- Problem-Solving: 🤔 ⚡ 🔧 🛠️
+- Performance/Speed: 🚀 ⚡ 📈 💨
+- Security/Safety: 🔒 🛡️ 🔐 🎯
+- Simplicity/Clarity: ✨ 💡 🎨 🧩
+- Innovation: 🚀 🤖 🧠 ✨ 🎯
 
-TONE: Professional but conversational, like talking to a senior engineer colleague over coffee.
+TONE: Friendly, curious, and accessible. Like a knowledgeable friend sharing something cool they discovered. NOT resume-speak or LinkedIn-corporate.
 
 Category: {topic['category']}
 Topic: {topic['title']}
+
+EXAMPLE (Accessible Style):
+💡 THE CHECKOUT LANE PRINCIPLE
+
+Think about the last time you were at a grocery store. Express lane vs regular lane - same groceries, different wait times.
+
+That's exactly how choosing between different API frameworks works. Some are built like express lanes (FastAPI) - they handle one thing at a time super fast. Others are like regular lanes (traditional frameworks) - they wait for each task to finish before starting the next.
+
+The difference? In a busy app, it's like having 100 people in line. Express lanes keep things moving.
+
+The surprising part: Most apps don't need express lanes at all. It's about matching the tool to your actual traffic.
+
+What's your go-to approach - speed optimization or simplicity first?
 """
 
             # Add special day context if applicable
@@ -170,13 +197,14 @@ Content: {post_content[:300]}...
 
 Requirements:
 1. Mix of popular (100K+ posts) and niche (10K-100K posts) hashtags
-2. Relevant to backend development, software engineering, and the specific topic
-3. Include technology-specific tags (e.g., Python, FastAPI, PostgreSQL)
-4. Include career/professional tags (e.g., SoftwareEngineering, TechCareer)
-5. Consider trending tech topics
+2. Include both TECHNICAL tags (for developers) AND GENERAL tags (for broader audience)
+3. Technical tags: Python, BackendDevelopment, SoftwareEngineering, specific technologies
+4. General tags: Productivity, Learning, Innovation, CareerGrowth, Technology, TechTips
+5. Make it accessible - non-developers should feel welcome
+6. Include trending topics when relevant
 
 Return ONLY a comma-separated list of hashtags WITHOUT the # symbol.
-Example format: Python, BackendDevelopment, SoftwareEngineering, FastAPI
+Example format: Technology, Innovation, Python, BackendDevelopment, Learning, Productivity, SoftwareEngineering
 """
 
             response = self.model.generate_content(prompt)
@@ -202,14 +230,16 @@ Example format: Python, BackendDevelopment, SoftwareEngineering, FastAPI
     def _get_fallback_hashtags(self, topic: Dict) -> list[str]:
         """Fallback hashtags based on category"""
         base_tags = [
+            "Technology",
+            "Innovation",
+            "Learning",
             "SoftwareEngineering",
             "BackendDevelopment",
             "Python",
-            "TechCareer",
-            "SoftwareDevelopment",
-            "Programming",
-            "DevCommunity",
-            "TechTips"
+            "Productivity",
+            "TechTips",
+            "CareerGrowth",
+            "SoftwareDevelopment"
         ]
 
         category_tags = {

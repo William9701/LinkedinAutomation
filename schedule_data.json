@@ -1,0 +1,86 @@
+[
+  {
+    "date": "2025-12-18",
+    "time": "09:00",
+    "type": "morning",
+    "status": "scheduled"
+  },
+  {
+    "date": "2025-12-18",
+    "time": "19:00",
+    "type": "evening",
+    "status": "scheduled"
+  },
+  {
+    "date": "2025-12-19",
+    "time": "09:00",
+    "type": "morning",
+    "status": "scheduled"
+  },
+  {
+    "date": "2025-12-19",
+    "time": "19:00",
+    "type": "evening",
+    "status": "scheduled"
+  },
+  {
+    "date": "2025-12-20",
+    "time": "09:00",
+    "type": "morning",
+    "status": "scheduled"
+  },
+  {
+    "date": "2025-12-20",
+    "time": "19:00",
+    "type": "evening",
+    "status": "scheduled"
+  },
+  {
+    "date": "2025-12-21",
+    "time": "09:00",
+    "type": "morning",
+    "status": "scheduled"
+  },
+  {
+    "date": "2025-12-21",
+    "time": "19:00",
+    "type": "evening",
+    "status": "scheduled"
+  },
+  {
+    "date": "2025-12-22",
+    "time": "09:00",
+    "type": "morning",
+    "status": "scheduled"
+  },
+  {
+    "date": "2025-12-22",
+    "time": "19:00",
+    "type": "evening",
+    "status": "scheduled"
+  },
+  {
+    "date": "2025-12-23",
+    "time": "09:00",
+    "type": "morning",
+    "status": "scheduled"
+  },
+  {
+    "date": "2025-12-23",
+    "time": "19:00",
+    "type": "evening",
+    "status": "scheduled"
+  },
+  {
+    "date": "2025-12-24",
+    "time": "09:00",
+    "type": "morning",
+    "status": "scheduled"
+  },
+  {
+    "date": "2025-12-24",
+    "time": "19:00",
+    "type": "evening",
+    "status": "scheduled"
+  }
+]
