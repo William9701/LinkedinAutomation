@@ -25,9 +25,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "http://localhost:3001", 
-        "https://*.vercel.app",
-        "https://vercel.app"
+        "http://localhost:3001",
+        "https://frontend-j3h2zermj-obi-williams-projects.vercel.app",
+        "*"  # Allow all origins for now
     ],
     allow_credentials=True,
     allow_methods=["*"],
