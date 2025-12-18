@@ -50,7 +50,7 @@ CRITICAL FORMATTING REQUIREMENTS FOR LINKEDIN:
 HEADER FORMAT (FIRST 2 LINES - VERY IMPORTANT):
 - Line 1: Start with 1-2 relevant emojis, then the topic title wrapped in **bold** (using **Title Here**)
 - Line 2: Leave blank
-- Line 3: Start the actual content
+- Line 3: Start the actual content with a hook
 
 Example header format:
 🚀 **FASTAPI VS FLASK**
@@ -78,16 +78,15 @@ LINKEDIN FORMATTING RULES - CRITICAL:
 - DO NOT include words like "Production Guide", "Battle-Tested", "Production Reality" etc in the title
 
 EMOJI GUIDELINES FOR HEADER:
-- Choose 1-2 emojis that relate to the topic category
-- Backend/API: 🚀 ⚡ 🔧 💻 🛠️ 🔥
-- Database: 💾 🗄️ 📊 🔍
-- DevOps/Cloud: ☁️ 🐳 ⚙️ 🔄 📦
-- Security: 🔒 🛡️ 🔐
-- AI/ML: 🤖 🧠 ✨
-- Performance: ⚡ 🚀 📈
-- Architecture: 🏗️ 🔧 📐
+- Choose 1-2 emojis that relate to the feeling/benefit, not just the tech
+- Discovery/Learning: 💡 ✨ 🎯 🔍 💭
+- Problem-Solving: 🤔 ⚡ 🔧 🛠️
+- Performance/Speed: 🚀 ⚡ 📈 💨
+- Security/Safety: 🔒 🛡️ 🔐 🎯
+- Simplicity/Clarity: ✨ 💡 🎨 🧩
+- Innovation: 🚀 🤖 🧠 ✨ 🎯
 
-TONE: Professional but conversational, like talking to a senior engineer colleague over coffee.
+TONE: Friendly, curious, and accessible. Like a knowledgeable friend sharing something cool they discovered. NOT resume-speak or LinkedIn-corporate.
 
 Category: {topic['category']}
 Clean Topic Title (use this for the header): {clean_title}
@@ -187,13 +186,14 @@ Content: {post_content[:300]}...
 
 Requirements:
 1. Mix of popular (100K+ posts) and niche (10K-100K posts) hashtags
-2. Relevant to backend development, software engineering, and the specific topic
-3. Include technology-specific tags (e.g., Python, FastAPI, PostgreSQL)
-4. Include career/professional tags (e.g., SoftwareEngineering, TechCareer)
-5. Consider trending tech topics
+2. Include both TECHNICAL tags (for developers) AND GENERAL tags (for broader audience)
+3. Technical tags: Python, BackendDevelopment, SoftwareEngineering, specific technologies
+4. General tags: Productivity, Learning, Innovation, CareerGrowth, Technology, TechTips
+5. Make it accessible - non-developers should feel welcome
+6. Include trending topics when relevant
 
 Return ONLY a comma-separated list of hashtags WITHOUT the # symbol.
-Example format: Python, BackendDevelopment, SoftwareEngineering, FastAPI
+Example format: Technology, Innovation, Python, BackendDevelopment, Learning, Productivity, SoftwareEngineering
 """
 
             response = self.model.generate_content(prompt)
@@ -219,14 +219,16 @@ Example format: Python, BackendDevelopment, SoftwareEngineering, FastAPI
     def _get_fallback_hashtags(self, topic: Dict) -> list[str]:
         """Fallback hashtags based on category"""
         base_tags = [
+            "Technology",
+            "Innovation",
+            "Learning",
             "SoftwareEngineering",
             "BackendDevelopment",
             "Python",
-            "TechCareer",
-            "SoftwareDevelopment",
-            "Programming",
-            "DevCommunity",
-            "TechTips"
+            "Productivity",
+            "TechTips",
+            "CareerGrowth",
+            "SoftwareDevelopment"
         ]
 
         category_tags = {
