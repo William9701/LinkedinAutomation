@@ -5,9 +5,11 @@ import logging
 from typing import Optional, Dict
 from .leetcode_fetcher import LeetCodeFetcher
 from .leetcode_image_generator import LeetCodeImageGenerator
-from .leetcode_content_generator import LeetCodeContentGenerator
+from .leetcode_code_image_generator import LeetCodeCodeImageGenerator
+from .leetcode_solution_generator import LeetCodeSolutionGenerator
 from .linkedin_poster import LinkedInPoster
 from .topic_manager import TopicManager
+from .combine_images import combine_images_vertical
 
 logger = logging.getLogger(__name__)
 
@@ -21,8 +23,9 @@ class LeetCodePoster:
         linkedin_access_token: str
     ):
         self.fetcher = LeetCodeFetcher()
-        self.image_generator = LeetCodeImageGenerator()
-        self.content_generator = LeetCodeContentGenerator(gemini_api_key)
+        self.question_image_generator = LeetCodeImageGenerator()
+        self.code_image_generator = LeetCodeCodeImageGenerator()
+        self.solution_generator = LeetCodeSolutionGenerator(gemini_api_key)
         self.linkedin_poster = LinkedInPoster(linkedin_access_token)
         self.topic_manager = TopicManager()
 
@@ -54,38 +57,62 @@ class LeetCodePoster:
                 'acceptance_rate': topic.get('acceptance_rate', 0)
             }
 
-            # Step 1: Generate the problem image
-            logger.info("Generating problem image...")
-            # Try to get detailed problem info
+            # Step 1: Get detailed problem info from LeetCode API
+            logger.info("Fetching problem details...")
             problem_details = None
             if problem['slug']:
                 problem_details = self.fetcher.get_problem_details(problem['slug'])
 
-            image_path = self.image_generator.generate_problem_image(problem, problem_details)
+            # Step 2: Generate QUESTION image (Image 1)
+            logger.info("Generating question image...")
+            question_image_path = self.question_image_generator.generate_problem_image(problem, problem_details)
 
-            if not image_path:
-                logger.error("Failed to generate image")
+            if not question_image_path:
+                logger.error("Failed to generate question image")
                 return None
 
-            # Step 2: Generate the solution content
-            logger.info("Generating solution content...")
-            solution_content = self.content_generator.generate_solution_post(problem, problem_details)
+            # Step 3: Generate COMPLETE SOLUTION (Python + TypeScript + Explanation)
+            logger.info("Generating complete solution...")
+            solution = self.solution_generator.generate_complete_solution(problem, problem_details)
 
-            if not solution_content:
+            if not solution:
                 logger.error("Failed to generate solution")
                 return None
 
-            # Step 3: Generate hashtags
-            hashtags = self.content_generator.generate_hashtags(problem)
-
-            # Step 4: Post to LinkedIn - IMAGE shows question, POST shows solution
-            logger.info("Posting to LinkedIn...")
-            post_urn = self.linkedin_poster.create_image_post(
-                content=solution_content,  # THE SOLUTION GOES IN THE POST
-                image_path=image_path,     # THE QUESTION IS IN THE IMAGE
-                hashtags=hashtags
+            # Step 4: Generate CODE image (Image 2: Python | TypeScript side-by-side)
+            logger.info("Generating code solution image...")
+            code_image_path = self.code_image_generator.generate_code_solution_image(
+                problem,
+                solution['python_code'],
+                solution['typescript_code']
             )
 
+            if not code_image_path:
+                logger.error("Failed to generate code image")
+                return None
+
+            # Step 5: Prepare post content (the EXPLANATION from solution)
+            post_content = solution['explanation']
+
+            # Step 6: Generate hashtags
+            hashtags = ['LeetCode', 'CodingInterview', 'DSA', 'Programming', 'Python', 'TypeScript', 'LearnToCode']
+
+            # Step 7: Combine both images into one (question on top, code on bottom)
+            logger.info("Combining images...")
+            combined_image_path = combine_images_vertical(question_image_path, code_image_path)
+
+            if not combined_image_path:
+                logger.error("Failed to combine images")
+                return None
+
+            # Step 8: Post to LinkedIn with combined image
+            # Combined Image = Question + Code, Post = Explanation
+            logger.info("Posting to LinkedIn...")
+            post_urn = self.linkedin_poster.create_image_post(
+                content=post_content,  # THE EXPLANATION
+                image_path=combined_image_path,  # COMBINED IMAGE (question + code)
+                hashtags=hashtags
+            )
             if post_urn:
                 # Mark topic as used
                 self.topic_manager.mark_topic_used(topic['id'])

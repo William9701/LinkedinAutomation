@@ -1,0 +1,116 @@
+=== PYTHON CODE ===
+def twoSum(nums: list[int], target: int) -> list[int]:
+    # Step 1: Initialize a dictionary (hash map) to store numbers and their indices.
+    # This will allow us to quickly check if a 'complement' (the number needed to reach the target)
+    # has been seen before as we iterate through the list.
+    num_map = {} # Stores: number -> its index
+
+    # Step 2: Iterate through the list of numbers, getting both the index (i) and the number (num).
+    for i, num in enumerate(nums):
+        # Step 3: Calculate the 'complement' required.
+        # If 'num' + 'complement' should equal 'target', then 'complement' = 'target' - 'num'.
+        complement = target - num
+
+        # Step 4: Check if this 'complement' already exists as a key in our num_map.
+        # If it does, it means we have previously encountered the number that pairs with the current 'num'
+        # to sum up to the 'target'.
+        if complement in num_map:
+            # Step 5: If the complement is found, we have our two numbers!
+            # Return a list containing the index of the complement (retrieved from num_map)
+            # and the current number's index (i).
+            return [num_map[complement], i]
+
+        # Step 6: If the complement is NOT found, it means the current 'num' doesn't have its pair
+        # among the numbers we've seen so far. So, we add the current 'num' and its index to our num_map.
+        # This way, if a future number needs 'num' as its complement, we'll find it.
+        num_map[num] = i
+
+    # Step 7: (This line will theoretically not be reached because the problem guarantees
+    # exactly one solution will always exist.)
+    # If, for some reason, no solution is found after checking all numbers, return an empty list.
+    return []
+
+=== TYPESCRIPT CODE ===
+function twoSum(nums: number[], target: number): number[] {
+    // Step 1: Initialize a Map (similar to a hash map/dictionary in Python)
+    // to store numbers and their indices.
+    // This will allow us to quickly check if a 'complement' (the number needed to reach the target)
+    // has been seen before as we iterate through the array.
+    const numMap = new Map<number, number>(); // Stores: number -> its index
+
+    // Step 2: Iterate through the array of numbers using a traditional for loop
+    // to easily access both the index (i) and the number (num).
+    for (let i = 0; i < nums.length; i++) {
+        const num = nums[i];
+
+        // Step 3: Calculate the 'complement' required.
+        // If 'num' + 'complement' should equal 'target', then 'complement' = 'target' - 'num'.
+        const complement = target - num;
+
+        // Step 4: Check if this 'complement' already exists as a key in our numMap.
+        // If it does, it means we have previously encountered the number that pairs with the current 'num'
+        // to sum up to the 'target'.
+        if (numMap.has(complement)) {
+            // Step 5: If the complement is found, we have our two numbers!
+            // Return an array containing the index of the complement (retrieved from numMap)
+            // and the current number's index (i).
+            // The '!' is a non-null assertion, telling TypeScript we're sure get() won't return undefined here.
+            return [numMap.get(complement)!, i];
+        }
+
+        // Step 6: If the complement is NOT found, it means the current 'num' doesn't have its pair
+        // among the numbers we've seen so far. So, we add the current 'num' and its index to our numMap.
+        // This way, if a future number needs 'num' as its complement, we'll find it.
+        numMap.set(num, i);
+    }
+
+    // Step 7: (This line will theoretically not be reached because the problem guarantees
+    // exactly one solution will always exist.)
+    // If, for some reason, no solution is found after checking all numbers, return an empty array.
+    return [];
+}
+
+=== EXPLANATION (for LinkedIn post) ===
+Welcome, future coding wizard! Let's tackle the "Two Sum" problem together.
+
+1. THE PROBLEM IN SIMPLE WORDS
+Imagine you have a shopping list of prices, like [2 dollars, 7 dollars, 11 dollars, 15 dollars]. Your friend gave you exactly 9 dollars and wants you to buy two items that perfectly add up to that amount. You need to tell your friend which two items (by their position in the list, like the first item and the second item) you bought. You can't buy the same item twice.
+
+2. LIVE WALKTHROUGH WITH EXAMPLE
+Let's use our example: nums = [2, 7, 11, 15] and target = 9.
+
+Step 1: In our code, we first create an empty dictionary called 'nummap' (or 'numMap' in TypeScript). This is like an empty notebook where we'll write down numbers we've seen and their positions.
+nummap = {}
+
+Step 2: We start looking at the numbers in 'nums' one by one.
+First number: 2 (at index 0)
+- We need to find a partner for 2 that, when added to 2, makes 9. So, the partner we need is 9 - 2 = 7. Let's call this our 'complement'.
+- We check our 'nummap' notebook: Have we already written down the number 7? No, our notebook is empty!
+- Since we haven't seen 7 yet, we write down the current number, 2, and its position, 0, in our notebook.
+nummap = {2: 0}
+
+Step 3: Move to the next number.
+Second number: 7 (at index 1)
+- We need a partner for 7 that makes 9. So, the complement we need is 9 - 7 = 2.
+- We check our 'nummap' notebook: Have we already written down the number 2? Yes! We see that 2 is at index 0.
+- Bingo! We found our pair! The current number 7 (at index 1) and the number 2 (which we found in our notebook at index 0) add up to 9.
+- We immediately return their indices: [nummap[complement], i], which is [0, 1].
+And that's it! We found the solution.
+
+3. THE CODE BREAKDOWN
+Let's connect this to the code directly:
+- In Step 1 of the code, we initialize nummap = {}. This is our 'memory' or 'notebook' to keep track of numbers and their original positions. This is crucial for efficiency!
+- In Step 2, the for loop (for i, num in enumerate(nums):) allows us to go through each number in the 'nums' list, one by one, also getting its index.
+- In Step 3, complement = target - num calculates what number we need to find to hit our target. This is the core idea!
+- In Step 4, if complement in nummap: is where we check our 'notebook'. We ask, "Have I seen the 'complement' number before?" Because if we have, that means we found our pair!
+- In Step 5, return [nummap[complement], i] immediately gives us the answer. We use nummap[complement] to get the original index of the complement we found, and 'i' is the index of our current number.
+- In Step 6, nummap[num] = i is our instruction to 'write down' the current number and its index if its complement wasn't found. We remember it for future numbers that might need it.
+
+4. WHY THIS WORKS
+The "aha!" moment here is that instead of trying to pair every number with every other number (which would be like checking every single combination, and very slow for large lists), we use our 'nummap' to be super efficient. For each number, we quickly calculate its required partner (the complement) and then instantly check if we've already seen that partner. Because checking if something is in a dictionary (or Map in TypeScript) is incredibly fast, this approach finds the answer very quickly.
+- Time complexity: We only go through the list once. Each check or addition to the nummap takes roughly constant time (O(1)). So, if there are 'n' numbers, it takes about 'n' operations, making it very fast (O(n)).
+- Space complexity: In the worst case, we might put almost all numbers into our nummap if the pair is found near the end. So, the space used scales with the number of elements (O(n)).
+
+5. TIPS FOR BEGINNERS
+- Common mistake: A beginner might first think of using two nested loops, checking every pair. While correct, that's much slower (O(n^2)). Always consider if a hash map (dictionary/Map) can speed up lookups!
+- How to recognize this pattern: Whenever a problem asks you to find two items in a list that satisfy a condition (like summing to a target, or their difference is X, or their product is Y), and you need an efficient solution, think about using a hash map. Store one part of the pair (like the number itself) and its important information (like its index), then for the next number, calculate what its 'partner' would be and quickly check if that partner is already in your hash map.

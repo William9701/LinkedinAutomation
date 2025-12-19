@@ -495,7 +495,7 @@
       "category": "LeetCode Easy",
       "title": "LeetCode #3396: Minimum Number of Operations to Make Elements in Array Distinct",
       "prompt": "Generate a beginner-friendly LinkedIn post solving LeetCode problem #3396: Minimum Number of Operations to Make Elements in Array Distinct.\n\nIMPORTANT: This is a coding problem explanation post. Follow the LeetCode solution format:\n\n1. Explain the problem in simple words with a real-world analogy\n2. Show a step-by-step example with small numbers\n3. Break down the approach into 3-4 simple steps\n4. Provide a clean Python code solution with comments (use 4-space indentation, NO code blocks)\n5. Explain why this works and the time/space complexity simply\n6. End with an encouraging note for beginners\n\nAcceptance Rate: 71.3%\nProblem Slug: minimum-number-of-operations-to-make-elements-in-array-distinct\n\nMake it friendly, encouraging, and accessible to coding beginners!",
-      "used": false,
+      "used": true,
       "leetcode_id": 3396,
       "leetcode_slug": "minimum-number-of-operations-to-make-elements-in-array-distinct",
       "acceptance_rate": 71.3
@@ -555,7 +555,7 @@
       "category": "LeetCode Easy",
       "title": "LeetCode #3483: Unique 3-Digit Even Numbers",
       "prompt": "Generate a beginner-friendly LinkedIn post solving LeetCode problem #3483: Unique 3-Digit Even Numbers.\n\nIMPORTANT: This is a coding problem explanation post. Follow the LeetCode solution format:\n\n1. Explain the problem in simple words with a real-world analogy\n2. Show a step-by-step example with small numbers\n3. Break down the approach into 3-4 simple steps\n4. Provide a clean Python code solution with comments (use 4-space indentation, NO code blocks)\n5. Explain why this works and the time/space complexity simply\n6. End with an encouraging note for beginners\n\nAcceptance Rate: 68.5%\nProblem Slug: unique-3-digit-even-numbers\n\nMake it friendly, encouraging, and accessible to coding beginners!",
-      "used": false,
+      "used": true,
       "leetcode_id": 3483,
       "leetcode_slug": "unique-3-digit-even-numbers",
       "acceptance_rate": 68.5
@@ -605,7 +605,7 @@
       "category": "LeetCode Easy",
       "title": "LeetCode #3606: Coupon Code Validator",
       "prompt": "Generate a beginner-friendly LinkedIn post solving LeetCode problem #3606: Coupon Code Validator.\n\nIMPORTANT: This is a coding problem explanation post. Follow the LeetCode solution format:\n\n1. Explain the problem in simple words with a real-world analogy\n2. Show a step-by-step example with small numbers\n3. Break down the approach into 3-4 simple steps\n4. Provide a clean Python code solution with comments (use 4-space indentation, NO code blocks)\n5. Explain why this works and the time/space complexity simply\n6. End with an encouraging note for beginners\n\nAcceptance Rate: 65.4%\nProblem Slug: coupon-code-validator\n\nMake it friendly, encouraging, and accessible to coding beginners!",
-      "used": false,
+      "used": true,
       "leetcode_id": 3606,
       "leetcode_slug": "coupon-code-validator",
       "acceptance_rate": 65.4
