@@ -263,3 +263,96 @@ class LinkedInPoster:
         except Exception as e:
             logger.error(f"Error creating image post: {str(e)}")
             return None
+
+    def add_comment_to_post(self, post_urn: str, comment_text: str) -> bool:
+        """
+        Add a comment to a LinkedIn post
+
+        Args:
+            post_urn: URN of the post to comment on
+            comment_text: Comment content
+
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            # Get user ID
+            if not self._user_id:
+                user_info = self.get_user_info()
+                if not user_info:
+                    logger.error("Could not retrieve user info for comment")
+                    return False
+
+            user_id = self._user_id
+            if not user_id:
+                logger.error("User ID not available")
+                return False
+
+            # Prepare comment data
+            comment_data = {
+                "actor": f"urn:li:person:{user_id}",
+                "object": post_urn,
+                "message": {
+                    "text": comment_text
+                }
+            }
+
+            # Post comment
+            url = f"{self.base_url}/socialActions/{post_urn}/comments"
+            response = requests.post(url, headers=self.headers, json=comment_data, timeout=30)
+
+            if response.status_code == 201:
+                logger.info(f"Comment added successfully to post: {post_urn}")
+                return True
+            else:
+                logger.error(f"Failed to add comment: {response.status_code} - {response.text}")
+                return False
+
+        except Exception as e:
+            logger.error(f"Error adding comment: {str(e)}")
+            return False
+
+    def create_image_post_with_comment(
+        self,
+        main_content: str,
+        comment_content: str,
+        image_path: str,
+        hashtags: list = None
+    ) -> Optional[str]:
+        """
+        Create a post with an image and add a comment with the solution
+
+        Args:
+            main_content: Main post content (the question/hook)
+            comment_content: Comment content (the solution/answer)
+            image_path: Path to image file
+            hashtags: List of hashtags (without #)
+
+        Returns:
+            Post URN if successful
+        """
+        try:
+            # First, create the post with image
+            post_urn = self.create_image_post(main_content, image_path, hashtags)
+
+            if not post_urn:
+                logger.error("Failed to create main post")
+                return None
+
+            # Wait a moment for the post to be fully created
+            import time
+            time.sleep(2)
+
+            # Add the solution as a comment
+            comment_success = self.add_comment_to_post(post_urn, comment_content)
+
+            if comment_success:
+                logger.info(f"Post with comment created successfully: {post_urn}")
+            else:
+                logger.warning(f"Post created but comment failed: {post_urn}")
+
+            return post_urn
+
+        except Exception as e:
+            logger.error(f"Error creating post with comment: {str(e)}")
+            return None

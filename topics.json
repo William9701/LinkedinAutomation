@@ -995,7 +995,7 @@
       "category": "LeetCode Easy",
       "title": "LeetCode #3407: Substring Matching Pattern",
       "prompt": "Generate a beginner-friendly LinkedIn post solving LeetCode problem #3407: Substring Matching Pattern.\n\nIMPORTANT: This is a coding problem explanation post. Follow the LeetCode solution format:\n\n1. Explain the problem in simple words with a real-world analogy\n2. Show a step-by-step example with small numbers\n3. Break down the approach into 3-4 simple steps\n4. Provide a clean Python code solution with comments (use 4-space indentation, NO code blocks)\n5. Explain why this works and the time/space complexity simply\n6. End with an encouraging note for beginners\n\nAcceptance Rate: 27.9%\nProblem Slug: substring-matching-pattern\n\nMake it friendly, encouraging, and accessible to coding beginners!",
-      "used": false,
+      "used": true,
       "leetcode_id": 3407,
       "leetcode_slug": "substring-matching-pattern",
       "acceptance_rate": 27.9

@@ -10,10 +10,11 @@ from src.topic_manager import TopicManager
 from src.content_generator import ContentGenerator
 from src.image_generator import ImageGenerator
 from src.linkedin_poster import LinkedInPoster
+from src.leetcode_poster import LeetCodePoster
 from api.models import (
-    CustomPostRequest, 
-    PostResponse, 
-    GeneratePreviewRequest, 
+    CustomPostRequest,
+    PostResponse,
+    GeneratePreviewRequest,
     PreviewResponse
 )
 
@@ -28,53 +29,56 @@ image_generator = ImageGenerator(
     replicate_token=settings.replicate_api_token
 )
 linkedin_poster = LinkedInPoster(settings.linkedin_access_token)
+leetcode_poster = LeetCodePoster(settings.gemini_api_key, settings.linkedin_access_token)
 
 
 @router.post("/post/random", response_model=PostResponse)
 async def create_random_post():
     """
-    Create and post a random LinkedIn post using an unused topic
+    Create and post a random LinkedIn post using an unused topic.
+    For LeetCode topics: posts problem image with solution as comment.
     """
     try:
         logger.info("Creating random post...")
-        
+
         # Get unused topic
         topic = topic_manager.get_unused_topic()
         if not topic:
             raise HTTPException(status_code=404, detail="No topics available")
-        
+
         logger.info(f"Selected topic: {topic['title']}")
-        
+
+        # Check if this is a LeetCode topic
+        if topic.get('category') == 'LeetCode Easy':
+            logger.info("Using LeetCode posting workflow (image + comment)")
+            post_urn = leetcode_poster.post_leetcode_problem(topic)
+
+            if post_urn:
+                return PostResponse(
+                    success=True,
+                    message="LeetCode problem posted with solution in comments",
+                    post_urn=post_urn,
+                    content=f"Posted LeetCode #{topic.get('leetcode_id')} with image and solution",
+                    hashtags=[]
+                )
+            else:
+                raise HTTPException(status_code=500, detail="Failed to post LeetCode problem")
+
+        # Regular topic posting (old flow)
         # Generate content
         post_content = content_generator.generate_post_content(topic)
         if not post_content:
             raise HTTPException(status_code=500, detail="Failed to generate content")
-        
+
         # Generate hashtags
         hashtags = content_generator.optimize_hashtags(topic, post_content)
-        
-        # Generate image (optional)
-        image_path = None
-        image_prompt = content_generator.generate_image_prompt(topic, post_content)
-        if image_prompt:
-            image_path = image_generator.generate_image(
-                image_prompt,
-                filename=f"topic_{topic['id']}"
-            )
-        
-        # Post to LinkedIn
-        if image_path and Path(image_path).exists():
-            post_urn = linkedin_poster.create_image_post(
-                content=post_content,
-                image_path=image_path,
-                hashtags=hashtags
-            )
-        else:
-            post_urn = linkedin_poster.create_text_post(
-                content=post_content,
-                hashtags=hashtags
-            )
-        
+
+        # Post to LinkedIn (text only for now)
+        post_urn = linkedin_poster.create_text_post(
+            content=post_content,
+            hashtags=hashtags
+        )
+
         if post_urn:
             topic_manager.mark_topic_used(topic['id'])
             return PostResponse(
@@ -86,7 +90,7 @@ async def create_random_post():
             )
         else:
             raise HTTPException(status_code=500, detail="Failed to post to LinkedIn")
-            
+
     except HTTPException:
         raise
     except Exception as e:
