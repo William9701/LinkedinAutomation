@@ -75,22 +75,14 @@ class LeetCodePoster:
                 logger.error("Failed to generate solution")
                 return None
 
-            # Step 3: Create main post content (short hook to engage)
-            main_post_content = f"""🎯 LeetCode #{problem['id']}: {problem['title']}
-
-Can you solve this coding challenge?
-
-Think about your approach, then check the comments for my step-by-step solution! 👇"""
-
-            # Step 4: Generate hashtags
+            # Step 3: Generate hashtags
             hashtags = self.content_generator.generate_hashtags(problem)
 
-            # Step 5: Post to LinkedIn with image and solution as comment
+            # Step 4: Post to LinkedIn - IMAGE shows question, POST shows solution
             logger.info("Posting to LinkedIn...")
-            post_urn = self.linkedin_poster.create_image_post_with_comment(
-                main_content=main_post_content,
-                comment_content=solution_content,
-                image_path=image_path,
+            post_urn = self.linkedin_poster.create_image_post(
+                content=solution_content,  # THE SOLUTION GOES IN THE POST
+                image_path=image_path,     # THE QUESTION IS IN THE IMAGE
                 hashtags=hashtags
             )
 
