@@ -148,39 +148,42 @@ class LeetCodeImageGenerator:
                 rate_text = f"{problem['acceptance_rate']:.0f}% ✓"
                 draw.text((340, 138), rate_text, font=difficulty_font, fill=secondary_color)
 
-            # Draw problem title (wrapped)
+            # Draw problem title (wrapped to 2 lines max)
             title = problem['title']
-            max_width = self.width - 120
+            title_wrapped = textwrap.fill(title, width=35)
+            title_lines = title_wrapped.split('\n')[:2]  # Max 2 lines
 
-            # Wrap title if too long
-            if len(title) > 50:
-                title = title[:47] + "..."
-
-            # Draw title with shadow for depth
             title_y = 240
-            # Shadow
-            draw.text((62, title_y + 2), title, font=title_font, fill=(0, 0, 0, 100))
-            # Main text
-            draw.text((60, title_y), title, font=title_font, fill=self.text_color)
+            for line in title_lines:
+                # Shadow for depth
+                draw.text((62, title_y + 2), line, font=title_font, fill=(0, 0, 0, 100))
+                # Main text
+                draw.text((60, title_y), line, font=title_font, fill=self.text_color)
+                title_y += 55
 
-            # Draw short description if available
+            # Draw FULL problem description if available
             if problem_details and problem_details.get('content'):
-                # Extract first sentence from HTML content
                 import re
                 content = problem_details['content']
                 # Remove HTML tags
-                content = re.sub(r'<[^>]+>', '', content)
-                # Get first sentence
-                sentences = content.split('.')
-                if sentences:
-                    desc = sentences[0][:150] + "..." if len(sentences[0]) > 150 else sentences[0]
+                content = re.sub(r'<[^>]+>', ' ', content)
+                # Clean up extra whitespace
+                content = re.sub(r'\s+', ' ', content).strip()
 
-                    # Wrap description
-                    wrapped_desc = textwrap.fill(desc, width=70)
-                    desc_y = 340
-                    for line in wrapped_desc.split('\n')[:3]:  # Max 3 lines
-                        draw.text((60, desc_y), line, font=description_font, fill=secondary_color)
-                        desc_y += 35
+                # Wrap the FULL description (not just first sentence)
+                # Use smaller font to fit more text
+                desc_font = self._get_font(20)
+                wrapped_desc = textwrap.fill(content, width=95)
+                desc_y = title_y + 20
+                max_desc_y = self.height - 100  # Leave room for footer
+
+                for line in wrapped_desc.split('\n'):
+                    if desc_y > max_desc_y:
+                        # Add "..." if we run out of space
+                        draw.text((60, desc_y - 10), "...", font=desc_font, fill=secondary_color)
+                        break
+                    draw.text((60, desc_y), line, font=desc_font, fill=secondary_color)
+                    desc_y += 26
 
             # Draw footer
             footer_y = self.height - 60

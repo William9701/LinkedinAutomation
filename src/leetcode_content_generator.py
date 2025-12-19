@@ -119,10 +119,10 @@ Problem: #{problem['id']} - {problem['title']}
             # Clean up any markdown that might have slipped through
             content = self._clean_formatting(content)
 
-            # Enforce LinkedIn character limit (3000 max, aim for 1200 with hashtags)
-            if len(content) > 1200:
+            # Enforce LinkedIn character limit (3000 max, aim for 2800 with hashtags)
+            if len(content) > 2800:
                 logger.warning(f"Content too long ({len(content)} chars), truncating...")
-                content = content[:1200].rsplit('\n', 1)[0]  # Cut at last newline before limit
+                content = content[:2800].rsplit('\n', 1)[0]  # Cut at last newline before limit
 
             logger.info(f"Generated solution post for: {problem['title']} ({len(content)} chars)")
             return content

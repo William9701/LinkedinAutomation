@@ -245,7 +245,7 @@
       "category": "LeetCode Easy",
       "title": "LeetCode #3304: Find the K-th Character in String Game I",
       "prompt": "Generate a beginner-friendly LinkedIn post solving LeetCode problem #3304: Find the K-th Character in String Game I.\n\nIMPORTANT: This is a coding problem explanation post. Follow the LeetCode solution format:\n\n1. Explain the problem in simple words with a real-world analogy\n2. Show a step-by-step example with small numbers\n3. Break down the approach into 3-4 simple steps\n4. Provide a clean Python code solution with comments (use 4-space indentation, NO code blocks)\n5. Explain why this works and the time/space complexity simply\n6. End with an encouraging note for beginners\n\nAcceptance Rate: 81.7%\nProblem Slug: find-the-k-th-character-in-string-game-i\n\nMake it friendly, encouraging, and accessible to coding beginners!",
-      "used": false,
+      "used": true,
       "leetcode_id": 3304,
       "leetcode_slug": "find-the-k-th-character-in-string-game-i",
       "acceptance_rate": 81.7
