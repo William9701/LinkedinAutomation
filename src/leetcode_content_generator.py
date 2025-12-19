@@ -74,9 +74,10 @@ CRITICAL FORMATTING RULES:
 - NO hashtags in content (added separately)
 - Use simple 4-space indentation for code
 - Use → or • for lists
-- Keep total under 1500 characters
+- Keep total under 1000 characters MAX (STRICT LinkedIn limit!)
 - Make it conversational and encouraging
 - Use "you" and "we" - make it personal
+- BE BRIEF - cut unnecessary words!
 
 TONE:
 - Friendly mentor explaining to a beginner
@@ -84,38 +85,28 @@ TONE:
 - Use phrases like "Here's the trick", "The key insight", "Think of it like..."
 - Make them feel smart for understanding it
 
-EXAMPLE STRUCTURE:
+EXAMPLE STRUCTURE (KEEP IT SHORT - under 1000 chars!):
 🎯 LeetCode #1: Two Sum
 
-Ever tried to find two items in your shopping cart that add up to a specific price?
+Finding two numbers that add up to a target? Think of it like finding matching puzzle pieces.
 
-That's exactly what this problem asks. Given a list of numbers, find two that add up to a target.
-
-Here's the trick: Instead of checking every pair (slow!), we can use a dictionary to remember what we've seen.
+The trick: Use a dictionary to remember what we've seen.
 
 The approach:
-→ Walk through the numbers one by one
-→ For each number, check if we've seen its "partner" before
-→ The partner is: target - current number
-→ If yes, we found our answer!
-→ If no, remember this number and move on
-
-The code pattern:
+→ For each number, check if its "partner" exists (target - number)
+→ If yes, found it!
+→ If no, save and continue
 
     def twoSum(nums, target):
-        seen = {{}}  # Remember what we've seen
+        seen = {{}}
         for i, num in enumerate(nums):
-            partner = target - num
-            if partner in seen:
-                return [seen[partner], i]
+            if target - num in seen:
+                return [seen[target - num], i]
             seen[num] = i
 
-Why this works: We only look at each number once! The dictionary lookup is instant.
+Why it works: One pass, instant lookups. O(n) time!
 
-Time: O(n) - one pass through
-Space: O(n) - storing numbers we've seen
-
-You just learned a pattern that works for dozens of problems! 🎯
+This pattern works for tons of problems. Keep practicing! 🎯
 
 NOW CREATE THE POST:
 Problem: #{problem['id']} - {problem['title']}
@@ -128,7 +119,12 @@ Problem: #{problem['id']} - {problem['title']}
             # Clean up any markdown that might have slipped through
             content = self._clean_formatting(content)
 
-            logger.info(f"Generated solution post for: {problem['title']}")
+            # Enforce LinkedIn character limit (3000 max, aim for 1200 with hashtags)
+            if len(content) > 1200:
+                logger.warning(f"Content too long ({len(content)} chars), truncating...")
+                content = content[:1200].rsplit('\n', 1)[0]  # Cut at last newline before limit
+
+            logger.info(f"Generated solution post for: {problem['title']} ({len(content)} chars)")
             return content
 
         except Exception as e:
