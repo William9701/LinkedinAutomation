@@ -11,15 +11,16 @@ logger = logging.getLogger(__name__)
 
 
 def add_leetcode_to_topics(
-    num_problems: int = 100,
-    topics_file: str = "topics.json",
-    leetcode_category: str = "LeetCode Easy"
+    easy_count: int = 100,
+    medium_count: int = 50,
+    hard_count: int = 30,
+    topics_file: str = "topics.json"
 ):
-    """Add LeetCode easy problems to topics library"""
+    """Add LeetCode problems of ALL difficulties to topics library"""
 
-    # Fetch LeetCode problems
+    # Fetch LeetCode problems (mixed difficulties)
     fetcher = LeetCodeFetcher()
-    problems = fetcher.get_easy_problems(limit=num_problems)
+    problems = fetcher.get_all_difficulties(easy_count, medium_count, hard_count)
 
     if not problems:
         logger.error("Failed to fetch LeetCode problems")
@@ -34,14 +35,16 @@ def add_leetcode_to_topics(
         return 0
 
     # Get current max ID
-    max_id = max(topic['id'] for topic in topics_data.get('topics', []))
+    existing_topics = topics_data.get('topics', [])
+    max_id = max((topic['id'] for topic in existing_topics), default=0)
 
     # Add LeetCode problems as topics
     new_topics = []
     for i, problem in enumerate(problems):
+        difficulty = problem.get('difficulty', 'Easy')
         topic = {
             "id": max_id + i + 1,
-            "category": leetcode_category,
+            "category": f"LeetCode {difficulty}",
             "title": f"LeetCode #{problem['id']}: {problem['title']}",
             "prompt": f"""Generate a beginner-friendly LinkedIn post solving LeetCode problem #{problem['id']}: {problem['title']}.
 
@@ -61,6 +64,8 @@ Make it friendly, encouraging, and accessible to coding beginners!""",
             "used": False,
             "leetcode_id": problem['id'],
             "leetcode_slug": problem['slug'],
+            "difficulty": difficulty,
+            "difficulty_level": problem.get('difficulty_level', 1),
             "acceptance_rate": round(problem['acceptance_rate'], 1)
         }
         new_topics.append(topic)
@@ -81,7 +86,8 @@ Make it friendly, encouraging, and accessible to coding beginners!""",
 
 
 if __name__ == "__main__":
-    # Add 100 LeetCode easy problems
-    added = add_leetcode_to_topics(num_problems=100)
-    print(f"\n✅ Successfully added {added} LeetCode problems to topics library!")
+    # Add LeetCode problems: 100 Easy, 50 Medium, 30 Hard = 180 total
+    added = add_leetcode_to_topics(easy_count=100, medium_count=50, hard_count=30)
+    print(f"\nSuccessfully added {added} LeetCode problems to topics library!")
+    print("Mix: 100 Easy + 50 Medium + 30 Hard")
     print("These will now be rotated into your automated posting schedule.")
