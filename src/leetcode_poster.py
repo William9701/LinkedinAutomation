@@ -43,7 +43,7 @@ class LeetCodePoster:
             # Get a LeetCode topic
             if not topic:
                 topic = self.topic_manager.get_unused_topic()
-                if not topic or topic.get('category') != 'LeetCode Easy':
+                if not topic or not topic.get('category', '').startswith('LeetCode'):
                     logger.error("No LeetCode topic available")
                     return None
 
@@ -91,23 +91,29 @@ class LeetCodePoster:
                 logger.error("Failed to generate code image")
                 return None
 
-            # Step 5: Prepare post content (the EXPLANATION from solution)
-            post_content = solution['explanation']
-
-            # Step 6: Generate hashtags
-            hashtags = ['LeetCode', 'CodingInterview', 'DSA', 'Programming', 'Python', 'TypeScript', 'LearnToCode']
-
-            # Step 7: Combine both images into one (question on top, code on bottom)
-            logger.info("Combining images...")
+            # Step 5: Combine both images (question on top, code on bottom)
+            logger.info("Combining question and code images...")
             combined_image_path = combine_images_vertical(question_image_path, code_image_path)
 
             if not combined_image_path:
                 logger.error("Failed to combine images")
                 return None
 
-            # Step 8: Post to LinkedIn with combined image
+            # Step 6: Prepare post content with problem title and explanation
+            problem_title = f"LeetCode #{problem['id']}: {problem['title']}\n\n"
+            post_content = problem_title + solution['explanation']
+
+            # Step 7: Standard hashtags for all posts
+            hashtags = [
+                'Algorithms', 'Coding', 'Python', 'SoftwareEngineering',
+                'ProblemSolving', 'CodeChallenges', 'Technology', 'Learning',
+                'Innovation', 'LogicPuzzles', 'CriticalThinking', 'BrainTeaser',
+                'CareerGrowth', 'TechTips', 'PersonalDevelopment'
+            ]
+
+            # Step 8: Post to LinkedIn with COMBINED image
             # Combined Image = Question + Code, Post = Explanation
-            logger.info("Posting to LinkedIn...")
+            logger.info("Posting to LinkedIn with combined image...")
             post_urn = self.linkedin_poster.create_image_post(
                 content=post_content,  # THE EXPLANATION
                 image_path=combined_image_path,  # COMBINED IMAGE (question + code)

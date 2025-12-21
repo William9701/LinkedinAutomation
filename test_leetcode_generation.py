@@ -41,7 +41,7 @@ def test_generation():
 
     # Get a random LeetCode topic
     topic = topic_manager.get_unused_topic()
-    if not topic or topic.get('category') != 'LeetCode Easy':
+    if not topic or not topic.get('category', '').startswith('LeetCode'):
         print("ERROR: No LeetCode topic available")
         return
 

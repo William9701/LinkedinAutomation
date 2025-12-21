@@ -356,3 +356,103 @@ class LinkedInPoster:
         except Exception as e:
             logger.error(f"Error creating post with comment: {str(e)}")
             return None
+
+    def create_multi_image_post(
+        self,
+        content: str,
+        image_paths: list,
+        hashtags: list = None
+    ) -> Optional[str]:
+        """
+        Create a post with multiple images on LinkedIn
+
+        Args:
+            content: Post content
+            image_paths: List of paths to image files
+            hashtags: List of hashtags (without #)
+
+        Returns:
+            Post URN if successful
+        """
+        try:
+            # Get user ID
+            user_info = self.get_user_info()
+            if not user_info:
+                logger.error("Could not retrieve user info")
+                return None
+
+            user_id = self._user_id or user_info.get("sub")
+            if not user_id:
+                logger.error(f"User ID not found. user_info: {user_info}, _user_id: {self._user_id}")
+                return None
+
+            logger.info(f"Using user_id: {user_id}")
+
+            # Upload all images
+            image_assets = []
+            for i, image_path in enumerate(image_paths):
+                logger.info(f"Uploading image {i+1}/{len(image_paths)}: {image_path}")
+                image_asset = self.upload_image(image_path, user_id)
+                if not image_asset:
+                    logger.error(f"Failed to upload image {i+1}")
+                    continue
+                image_assets.append(image_asset)
+
+            if not image_assets:
+                logger.error("Failed to upload any images, posting text only")
+                return self.create_text_post(content, hashtags)
+
+            # Format hashtags
+            if hashtags:
+                hashtag_text = " ".join([f"#{tag}" for tag in hashtags])
+                full_content = f"{content}\n\n{hashtag_text}"
+            else:
+                full_content = content
+
+            # Prepare media array with all images
+            media_array = []
+            for i, asset in enumerate(image_assets):
+                media_array.append({
+                    "status": "READY",
+                    "description": {
+                        "text": f"Image {i+1}"
+                    },
+                    "media": asset,
+                    "title": {
+                        "text": f"Image {i+1}"
+                    }
+                })
+
+            # Prepare post data with multiple images
+            post_data = {
+                "author": f"urn:li:person:{user_id}",
+                "lifecycleState": "PUBLISHED",
+                "specificContent": {
+                    "com.linkedin.ugc.ShareContent": {
+                        "shareCommentary": {
+                            "text": full_content
+                        },
+                        "shareMediaCategory": "IMAGE",
+                        "media": media_array
+                    }
+                },
+                "visibility": {
+                    "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+                }
+            }
+
+            # Post to LinkedIn
+            url = f"{self.base_url}/ugcPosts"
+            response = requests.post(url, headers=self.headers, json=post_data, timeout=30)
+
+            if response.status_code == 201:
+                post_urn = response.headers.get("x-restli-id")
+                logger.info(f"Post with {len(image_assets)} images created successfully: {post_urn}")
+                return post_urn
+            else:
+                logger.error(f"Failed to create post with images: {response.status_code} - {response.text}")
+                return None
+
+        except Exception as e:
+            logger.error(f"Error creating multi-image post: {str(e)}")
+            return None

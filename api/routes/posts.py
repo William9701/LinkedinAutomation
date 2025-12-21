@@ -49,17 +49,22 @@ async def create_random_post():
         logger.info(f"Selected topic: {topic['title']}")
 
         # Check if this is a LeetCode topic
-        if topic.get('category') == 'LeetCode Easy':
-            logger.info("Using LeetCode posting workflow (image + comment)")
+        if topic.get('category', '').startswith('LeetCode'):
+            logger.info("Using LeetCode posting workflow (combined image + explanation)")
             post_urn = leetcode_poster.post_leetcode_problem(topic)
 
             if post_urn:
                 return PostResponse(
                     success=True,
-                    message="LeetCode problem posted with solution in comments",
+                    message="LeetCode problem posted with combined image and explanation",
                     post_urn=post_urn,
-                    content=f"Posted LeetCode #{topic.get('leetcode_id')} with image and solution",
-                    hashtags=[]
+                    content=f"Posted LeetCode #{topic.get('leetcode_id')} with combined question+code image",
+                    hashtags=[
+                        'Algorithms', 'Coding', 'Python', 'SoftwareEngineering',
+                        'ProblemSolving', 'CodeChallenges', 'Technology', 'Learning',
+                        'Innovation', 'LogicPuzzles', 'CriticalThinking', 'BrainTeaser',
+                        'CareerGrowth', 'TechTips', 'PersonalDevelopment'
+                    ]
                 )
             else:
                 raise HTTPException(status_code=500, detail="Failed to post LeetCode problem")

@@ -25,8 +25,20 @@ def combine_images_vertical(image1_path: str, image2_path: str, output_path: str
         img1 = Image.open(image1_path)
         img2 = Image.open(image2_path)
 
-        # Get dimensions
+        # Get dimensions - make both images same width (use the larger one)
         width = max(img1.width, img2.width)
+        total_height = img1.height + img2.height
+
+        # Resize images to same width if they differ
+        if img1.width != width:
+            new_height1 = int(img1.height * (width / img1.width))
+            img1 = img1.resize((width, new_height1), Image.Resampling.LANCZOS)
+
+        if img2.width != width:
+            new_height2 = int(img2.height * (width / img2.width))
+            img2 = img2.resize((width, new_height2), Image.Resampling.LANCZOS)
+
+        # Recalculate total height after resize
         total_height = img1.height + img2.height
 
         # Create new image

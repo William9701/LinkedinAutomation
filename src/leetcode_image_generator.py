@@ -3,6 +3,9 @@ Generate beautiful images for LeetCode problems
 """
 from PIL import Image, ImageDraw, ImageFont
 import textwrap
+import re
+import random
+import html
 from pathlib import Path
 import logging
 from typing import Dict, Optional
@@ -17,9 +20,9 @@ class LeetCodeImageGenerator:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
 
-        # Card dimensions
-        self.width = 1200
-        self.height = 630  # LinkedIn optimal size
+        # Card dimensions - Increased by 10% (5% left, 5% right)
+        self.initial_width = 1540  # 1400 * 1.10 = 1540
+        self.initial_height = 800  # Taller for more content
 
         # Text colors (constant)
         self.text_color = (255, 255, 255)
@@ -29,26 +32,24 @@ class LeetCodeImageGenerator:
 
     def _get_random_color_scheme(self):
         """Generate a random color scheme for the card"""
-        import random
-
-        # Dynamic color themes
+        # Dynamic color themes - Brighter with better contrast
         themes = [
-            # Purple theme
-            {'bg': (88, 28, 135), 'accent': (168, 85, 247), 'secondary': (216, 180, 254)},
-            # Blue theme
-            {'bg': (30, 58, 138), 'accent': (59, 130, 246), 'secondary': (147, 197, 253)},
-            # Teal theme
-            {'bg': (19, 78, 74), 'accent': (20, 184, 166), 'secondary': (153, 246, 228)},
-            # Pink theme
-            {'bg': (131, 24, 67), 'accent': (236, 72, 153), 'secondary': (249, 168, 212)},
-            # Orange theme
-            {'bg': (124, 45, 18), 'accent': (249, 115, 22), 'secondary': (253, 186, 116)},
-            # Indigo theme
-            {'bg': (49, 46, 129), 'accent': (99, 102, 241), 'secondary': (165, 180, 252)},
-            # Rose theme
-            {'bg': (136, 19, 55), 'accent': (244, 63, 94), 'secondary': (251, 207, 232)},
-            # Cyan theme
-            {'bg': (22, 78, 99), 'accent': (6, 182, 212), 'secondary': (165, 243, 252)},
+            # Bright Purple theme
+            {'bg': (75, 0, 130), 'accent': (186, 85, 211), 'secondary': (240, 230, 255)},
+            # Bright Blue theme
+            {'bg': (0, 51, 153), 'accent': (30, 144, 255), 'secondary': (240, 248, 255)},
+            # Bright Teal theme
+            {'bg': (0, 102, 102), 'accent': (0, 206, 209), 'secondary': (240, 255, 255)},
+            # Bright Pink theme
+            {'bg': (153, 0, 76), 'accent': (255, 20, 147), 'secondary': (255, 240, 245)},
+            # Bright Orange theme
+            {'bg': (153, 51, 0), 'accent': (255, 140, 0), 'secondary': (255, 250, 240)},
+            # Bright Indigo theme
+            {'bg': (51, 0, 153), 'accent': (138, 43, 226), 'secondary': (248, 240, 255)},
+            # Bright Rose theme
+            {'bg': (153, 0, 51), 'accent': (255, 0, 127), 'secondary': (255, 240, 245)},
+            # Bright Cyan theme
+            {'bg': (0, 102, 153), 'accent': (0, 191, 255), 'secondary': (240, 255, 255)},
         ]
 
         return random.choice(themes)
@@ -85,46 +86,64 @@ class LeetCodeImageGenerator:
             accent_color = colors['accent']
             secondary_color = colors['secondary']
 
+            # Calculate dynamic width based on content
+            if problem_details and problem_details.get('content'):
+                content = re.sub(r'<[^>]+>', ' ', problem_details['content'])
+                content = re.sub(r'\s+', ' ', content).strip()
+                # Estimate width needed (rough estimate: ~11px per char at font size 28)
+                max_line_len = max(len(line) for line in textwrap.wrap(content, width=80))
+                calculated_width = max(self.initial_width, (max_line_len * 14) + 120)
+            else:
+                calculated_width = self.initial_width
+
+            final_width = calculated_width
+            final_height = self.initial_height
+
             # Create image with gradient background
-            img = Image.new('RGB', (self.width, self.height), bg_color)
+            img = Image.new('RGB', (final_width, final_height), bg_color)
             draw = ImageDraw.Draw(img)
 
             # Add gradient effect (simple vertical gradient)
-            for y in range(self.height):
-                alpha = y / self.height
+            for y in range(final_height):
+                alpha = y / final_height
                 r = int(bg_color[0] * (1 - alpha) + 50 * alpha)
                 g = int(bg_color[1] * (1 - alpha) + 20 * alpha)
                 b = int(bg_color[2] * (1 - alpha) + 80 * alpha)
-                draw.rectangle([(0, y), (self.width, y + 1)], fill=(r, g, b))
+                draw.rectangle([(0, y), (final_width, y + 1)], fill=(r, g, b))
 
-            # Fonts
-            title_font = self._get_font(48, bold=True)
-            number_font = self._get_font(36, bold=True)
-            difficulty_font = self._get_font(28, bold=True)
-            description_font = self._get_font(24)
-            footer_font = self._get_font(20)
+            # Fonts - Increased for better visibility
+            title_font = self._get_font(60, bold=True)
+            number_font = self._get_font(48, bold=True)
+            difficulty_font = self._get_font(38, bold=True)
+            description_font = self._get_font(32)  # Increased from 28 to 32
+            footer_font = self._get_font(24)
 
             # Draw LeetCode branding
             draw.text((60, 50), "LeetCode", font=title_font, fill=accent_color)
 
-            # Draw problem number with badge
+            # Draw problem number with badge (dark semi-transparent background)
             problem_num = f"#{problem['id']}"
-            draw.rounded_rectangle(
-                [(60, 120), (180, 180)],
-                radius=10,
-                fill=accent_color
-            )
-            # Center the number in the badge
+            # Calculate badge size based on text
             bbox = draw.textbbox((0, 0), problem_num, font=number_font)
             num_width = bbox[2] - bbox[0]
+            num_height = bbox[3] - bbox[1]
+
+            # Draw dark badge background
+            badge_padding = 15
+            draw.rounded_rectangle(
+                [(50, 115), (50 + num_width + badge_padding * 2, 115 + num_height + badge_padding * 2)],
+                radius=10,
+                fill=(0, 0, 0, 150)  # Semi-transparent black
+            )
+            # Draw number in the badge
             draw.text(
-                (120 - num_width // 2, 130),
+                (50 + badge_padding, 120),
                 problem_num,
                 font=number_font,
-                fill=self.text_color
+                fill=accent_color  # Use accent color for visibility
             )
 
-            # Draw difficulty badge
+            # Draw difficulty badge - moved down to align better
             difficulty = "Easy"  # Default
             diff_color = self.easy_color
             if problem_details:
@@ -137,16 +156,16 @@ class LeetCodeImageGenerator:
                     diff_color = self.hard_color
 
             draw.rounded_rectangle(
-                [(200, 130), (320, 170)],
+                [(200, 138), (320, 178)],  # Moved down by 8px
                 radius=10,
                 fill=diff_color
             )
-            draw.text((220, 135), difficulty, font=difficulty_font, fill=(0, 0, 0))
+            draw.text((220, 143), difficulty, font=difficulty_font, fill=(0, 0, 0))  # Moved down by 8px
 
             # Draw acceptance rate if available
             if 'acceptance_rate' in problem:
-                rate_text = f"{problem['acceptance_rate']:.0f}% ✓"
-                draw.text((340, 138), rate_text, font=difficulty_font, fill=secondary_color)
+                rate_text = f"{problem['acceptance_rate']:.0f}%"
+                draw.text((340, 146), rate_text, font=difficulty_font, fill=secondary_color)  # Moved down by 8px
 
             # Draw problem title (wrapped to 2 lines max)
             title = problem['title']
@@ -161,32 +180,128 @@ class LeetCodeImageGenerator:
                 draw.text((60, title_y), line, font=title_font, fill=self.text_color)
                 title_y += 55
 
-            # Draw FULL problem description if available
+            # Draw problem description if available (stop before examples)
             if problem_details and problem_details.get('content'):
-                import re
                 content = problem_details['content']
-                # Remove HTML tags
-                content = re.sub(r'<[^>]+>', ' ', content)
-                # Clean up extra whitespace
-                content = re.sub(r'\s+', ' ', content).strip()
 
-                # Wrap the FULL description (not just first sentence)
-                # Use smaller font to fit more text
-                desc_font = self._get_font(20)
-                wrapped_desc = textwrap.fill(content, width=95)
-                desc_y = title_y + 20
-                max_desc_y = self.height - 100  # Leave room for footer
+                # Parse HTML content properly
+                # First decode HTML entities
+                content = html.unescape(content)
 
-                for line in wrapped_desc.split('\n'):
-                    if desc_y > max_desc_y:
-                        # Add "..." if we run out of space
-                        draw.text((60, desc_y - 10), "...", font=desc_font, fill=secondary_color)
-                        break
-                    draw.text((60, desc_y), line, font=desc_font, fill=secondary_color)
-                    desc_y += 26
+                # STOP at "Example" section - try multiple patterns
+                if '<strong>Example' in content:
+                    content = content.split('<strong>Example')[0]
+                elif 'Example 1' in content:
+                    content = content.split('Example 1')[0]
+                elif 'Example' in content:
+                    # Find first occurrence of Example followed by number/colon
+                    match = re.search(r'Example\s*\d*\s*:', content, re.IGNORECASE)
+                    if match:
+                        content = content[:match.start()]
+
+                # Replace common HTML tags with formatting
+                content = re.sub(r'<p>', '\n\n', content)
+                content = re.sub(r'</p>', '', content)
+                content = re.sub(r'<ul>', '\n', content)
+                content = re.sub(r'</ul>', '\n', content)
+                content = re.sub(r'<li>', '\n• ', content)
+                content = re.sub(r'</li>', '', content)
+                content = re.sub(r'<strong>|<b>', '', content)
+                content = re.sub(r'</strong>|</b>', '', content)
+                content = re.sub(r'<code>', '', content)
+                content = re.sub(r'</code>', '', content)
+                content = re.sub(r'<pre>', '\n', content)
+                content = re.sub(r'</pre>', '\n', content)
+
+                # Remove any remaining HTML tags
+                content = re.sub(r'<[^>]+>', '', content)
+
+                # Clean up extra whitespace but preserve paragraph breaks
+                content = re.sub(r' +', ' ', content)
+                content = re.sub(r'\n\n+', '\n\n', content)
+                content = content.strip()
+
+                # Larger font for better visibility
+                desc_font = self._get_font(32, bold=False)
+
+                # Count lines needed for dynamic height
+                lines_list = []
+                for paragraph in content.split('\n\n'):
+                    if paragraph.strip():
+                        wrapped = textwrap.fill(paragraph.strip(), width=50)
+                        lines_list.extend(wrapped.split('\n'))
+                        lines_list.append('')  # Add spacing between paragraphs
+
+                # Calculate required height
+                line_height = 40
+                content_height = len(lines_list) * line_height + 300  # Add padding
+                final_height = max(final_height, content_height)
+
+                # Recreate image with new height
+                img = Image.new('RGB', (final_width, final_height), bg_color)
+                draw = ImageDraw.Draw(img)
+
+                # Add gradient effect
+                for y in range(final_height):
+                    alpha = y / final_height
+                    r = int(bg_color[0] * (1 - alpha) + 50 * alpha)
+                    g = int(bg_color[1] * (1 - alpha) + 20 * alpha)
+                    b = int(bg_color[2] * (1 - alpha) + 80 * alpha)
+                    draw.rectangle([(0, y), (final_width, y + 1)], fill=(r, g, b))
+
+                # Redraw header (LeetCode branding)
+                header_font = self._get_font(60, bold=True)
+                number_font = self._get_font(48, bold=True)
+                difficulty_font = self._get_font(38, bold=True)
+                footer_font = self._get_font(24)
+
+                draw.text((60, 50), "LeetCode", font=header_font, fill=accent_color)
+
+                # Redraw problem number and stats
+                problem_num = f"#{problem['id']}"
+                draw.text((60, 120), problem_num, font=number_font, fill=accent_color)
+
+                difficulty = problem_details.get('difficulty', 'Medium') if problem_details else 'Medium'
+                diff_color = {
+                    'Easy': self.easy_color,
+                    'Medium': self.medium_color,
+                    'Hard': self.hard_color
+                }.get(difficulty, self.medium_color)
+
+                diff_bbox = draw.textbbox((0, 0), difficulty, font=difficulty_font)
+                diff_width = diff_bbox[2] - diff_bbox[0]
+                diff_height = diff_bbox[3] - diff_bbox[1]
+
+                diff_x = 250
+                diff_y = 100
+                padding = 15
+                draw.rounded_rectangle(
+                    [(diff_x - padding, diff_y - padding//2),
+                     (diff_x + diff_width + padding, diff_y + diff_height + padding)],
+                    radius=8,
+                    fill=diff_color
+                )
+                draw.text((diff_x, diff_y), difficulty, font=difficulty_font, fill=(20, 20, 35))
+
+                acceptance_rate = problem_details.get('acceptance_rate', '0%') if problem_details else '0%'
+                draw.text((diff_x + diff_width + 60, 105), acceptance_rate, font=self._get_font(48), fill=self.text_color)
+
+                # Redraw title
+                title_y = 180
+                for line in title_lines:
+                    draw.text((62, title_y + 2), line, font=title_font, fill=(0, 0, 0, 100))
+                    draw.text((60, title_y), line, font=title_font, fill=self.text_color)
+                    title_y += 55
+
+                # Draw formatted description
+                desc_y = title_y + 30
+                for line in lines_list:
+                    if line:  # Non-empty line
+                        draw.text((60, desc_y), line, font=desc_font, fill=secondary_color)
+                    desc_y += line_height
 
             # Draw footer
-            footer_y = self.height - 60
+            footer_y = final_height - 60
             draw.text(
                 (60, footer_y),
                 "💡 Tap to see the solution approach!",
@@ -196,7 +311,7 @@ class LeetCodeImageGenerator:
 
             # Draw decorative accent line
             draw.rectangle(
-                [(0, self.height - 10), (self.width, self.height)],
+                [(0, final_height - 10), (final_width, final_height)],
                 fill=accent_color
             )
 

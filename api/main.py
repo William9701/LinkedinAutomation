@@ -3,7 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import logging
 
-from .routes import posts, schedule, topics
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from api.routes import posts, schedule, topics
 
 # Configure logging
 logging.basicConfig(

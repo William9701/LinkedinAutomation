@@ -1,0 +1,117 @@
+=== LEETCODE #3702: Longest Subsequence With Non-Zero Bitwise XOR ===
+
+=== PYTHON CODE ===
+import functools
+import operator
+
+def longestSubsequenceWithNonZeroXor(nums: list[int]) -> int:
+    // Step 1: Handle the edge case where the input array is empty.
+    // If there are no numbers, no subsequence can have a non-zero XOR sum.
+    if not nums:
+        return 0
+
+    // Step 2: Calculate the bitwise XOR sum of all elements in the array.
+    // functools.reduce applies the operator.xor function cumulatively to the elements.
+    // The initial value (0) ensures it works correctly even if nums had a single element.
+    total_xor_sum = functools.reduce(operator.xor, nums)
+
+    // Step 3: If the total XOR sum of all elements is already non-zero,
+    // the entire array itself forms the longest possible subsequence.
+    if total_xor_sum != 0:
+        return len(nums)
+    else:
+        // Step 4: If the total XOR sum is zero, the entire array doesn't work.
+        // We must remove at least one element to potentially get a non-zero XOR sum.
+        // We check if there's any non-zero element in the array that we could remove.
+        // The 'any' function efficiently returns True if at least one element satisfies the condition.
+        if any(num != 0 for num in nums):
+            // Step 5: If there's at least one non-zero element, removing it will result
+            // in a subsequence whose XOR sum is equal to the removed element (which is non-zero).
+            // To get the longest such subsequence, we remove only one element.
+            return len(nums) - 1
+        else:
+            // Step 6: If all elements are zero (and thus their XOR sum is also zero),
+            // no subsequence (even after removing elements) can have a non-zero XOR sum.
+            // In this specific case, return 0.
+            return 0
+
+=== TYPESCRIPT CODE ===
+function longestSubsequenceWithNonZeroXor(nums: number[]): number {
+    // Step 1: Handle the edge case where the input array is empty.
+    // If there are no numbers, no subsequence can have a non-zero XOR sum.
+    if (nums.length === 0) {
+        return 0;
+    }
+
+    // Step 2: Calculate the bitwise XOR sum of all elements in the array.
+    // We use the reduce method to apply the XOR operation cumulatively, starting with 0.
+    let totalXorSum: number = nums.reduce((acc, num) => acc ^ num, 0);
+
+    // Step 3: If the total XOR sum of all elements is already non-zero,
+    // the entire array itself forms the longest possible subsequence.
+    if (totalXorSum !== 0) {
+        return nums.length;
+    } else {
+        // Step 4: If the total XOR sum is zero, the entire array doesn't work.
+        // We must remove at least one element to potentially get a non-zero XOR sum.
+        // We check if there's any non-zero element in the array that we could remove.
+        // The 'some' method efficiently returns true if at least one element satisfies the condition.
+        const hasNonZero: boolean = nums.some(num => num !== 0);
+
+        if (hasNonZero) {
+            // Step 5: If there's at least one non-zero element, removing it will result
+            // in a subsequence whose XOR sum is equal to the removed element (which is non-zero).
+            // To get the longest such subsequence, we remove only one element.
+            return nums.length - 1;
+        } else {
+            // Step 6: If all elements are zero (and thus their XOR sum is also zero),
+            // no subsequence (even after removing elements) can have a non-zero XOR sum.
+            // In this specific case, return 0.
+            return 0;
+        }
+    }
+}
+
+=== LINKEDIN POST (EXPLANATION) ===
+1.  THE PROBLEM IN SIMPLE WORDS
+    Imagine you have a set of special light switches, each represented by a number. When you combine (XOR) the states of some switches, you want the final combined state to be "on" (meaning the result is a non-zero number). Your goal is to pick the largest group of switches that results in an "on" state. If you can't form any group that gives an "on" state, you should return 0.
+
+2.  LIVE WALKTHROUGH WITH EXAMPLE
+    Let's trace how the code works using the example nums = [1, 2, 3].
+
+    -   First, we check if the array is empty (referencing Step 1 in the code). nums is [1, 2, 3], which is not empty, so we proceed.
+    -   Next, we calculate the total bitwise XOR sum of all numbers in nums (referencing Step 2 in the code).
+        -   We start with an accumulator 0.
+        -   0 XOR 1 gives 1.
+        -   1 XOR 2 gives 3.
+        -   3 XOR 3 gives 0.
+        -   So, after going through all numbers, our totalxorsum (or totalXorSum in TypeScript) is 0.
+    -   Now, we check if totalxorsum is non-zero (referencing Step 3). Since totalxorsum is 0, this condition is false, and we enter the else block.
+    -   Inside the else block, we know that using the entire array [1, 2, 3] results in an XOR sum of 0. This means we can't use the whole array. We need to find if we can achieve a non-zero XOR sum by removing just one element. To do this, we check if there's any number in nums that is not zero (referencing Step 4).
+        -   We look at 1. Is 1 not equal to 0? Yes.
+        -   Since we found a non-zero number, any(num != 0 for num in nums) (or nums.some(num => num !== 0) in TypeScript) will be True. So, hasnonzero becomes True.
+    -   Because hasnonzero is True, we enter the if hasnonzero block (referencing Step 5).
+        -   The code then returns len(nums) - 1. len(nums) is 3, so it returns 3 - 1 = 2.
+    -   The final result for [1, 2, 3] is 2. This is correct because, for example, the subsequence [2, 3] has an XOR sum of 2 XOR 3 = 1, which is non-zero, and its length is 2. This is the longest we can get.
+
+3.  THE CODE BREAKDOWN
+    -   Step 1 (Python line 5 / TypeScript line 2): This is our initial check for an empty array. If nums is empty, you can't form any subsequence, so you can't get a non-zero XOR sum. We immediately return 0.
+    -   Step 2 (Python line 9 / TypeScript line 8): Here, we calculate the XOR sum of all numbers in the nums array. This is done efficiently using functools.reduce in Python or the reduce method in TypeScript. This step checks if the entire array can be our longest subsequence.
+    -   Step 3 (Python line 12 / TypeScript line 11): We ask, "Is the totalxorsum we just calculated non-zero?" If it is, fantastic! The entire array itself already satisfies the condition, and you can't have a longer subsequence than the whole array. So, we return len(nums).
+    -   Step 4 (Python line 16 / TypeScript line 16): If the totalxorsum was 0 (meaning the condition in Step 3 was false), then using the entire array results in a zero XOR sum. To get a non-zero XOR sum, we must remove at least one element. When you remove an element x from a set whose total XOR sum was 0, the new XOR sum of the remaining elements becomes 0 XOR x, which simplifies to just x. Therefore, to make the new XOR sum non-zero, the element x we remove must be non-zero. This step checks if any non-zero number exists in nums that we could potentially remove.
+    -   Step 5 (Python line 19 / TypeScript line 21): If we found at least one non-zero element in Step 4, it means we can remove it. By removing just one non-zero element, the remaining len(nums) - 1 elements will have an XOR sum equal to the removed non-zero element, thus being non-zero. Since we want the longest subsequence, removing only one element is the best we can do in this scenario.
+    -   Step 6 (Python line 23 / TypeScript line 24): This is the final fallback. If totalxorsum was 0 AND there were no non-zero elements in the array (meaning all elements were 0), then no matter what subsequence you pick, its XOR sum will always be 0. For example, [0, 0, 0]. Any subsequence (like [0, 0] or [0]) will XOR to 0. In this case, no non-zero XOR sum is possible, so we return 0.
+
+4.  WHY THIS WORKS
+    The "aha!" moment here comes from a key property of XOR: if the XOR sum of a set of numbers S is totalxor, and you remove one number x from that set, the XOR sum of the remaining numbers is simply totalxor XOR x.
+    -   If totalxor (of the whole nums array) is already non-zero, then the whole array is our answer, as it's the longest possible subsequence.
+    -   If totalxor is 0, we need to remove an x such that the remaining elements' XOR sum (0 XOR x, which is just x) is non-zero. This means we need to remove a number x that is itself non-zero. If such a non-zero x exists in nums, we remove just one to keep the subsequence as long as possible, resulting in len(nums) - 1. If all numbers in nums are 0, then any x you remove will be 0, and the remaining XOR sum will still be 0. In this special case, no non-zero XOR subsequence can be formed, so the answer is 0.
+    This solution is very efficient:
+    -   Time Complexity: O(N), where N is the number of elements in nums. We iterate through the list (or use reduce/any/some) at most twice.
+    -   Space Complexity: O(1), as we only use a few constant-size variables.
+
+5.  TIPS FOR BEGINNERS
+    -   Master XOR Properties: Seriously, understand A XOR A = 0 and A XOR 0 = A. These two properties are the foundation for solving many bitwise problems, including this one.
+    -   Consider Edge Cases First: Always think about scenarios like an empty input array (nums = []) or an array where all elements are the same (e.g., nums = [0, 0, 0]). These edge cases often reveal crucial parts of your logic. Our Step 1 and Step 6 directly address such cases.
+    -   Simplify the Problem: Sometimes, a problem that asks for the "longest subsequence" can be intimidating. But for properties like XOR sum, it often simplifies to considering the entire array first, then the entire array minus one element. Look for minimal changes to satisfy the condition.
+    -   Recognize the Pattern: When you see problems involving "subsequence" and "XOR sum" (or similar aggregate operations), consider if the properties of the operation allow for a quick check of the full array, and then a minimal adjustment if the full array doesn't work.

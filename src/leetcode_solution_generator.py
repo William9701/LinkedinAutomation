@@ -41,76 +41,79 @@ YOU MUST PROVIDE 3 THINGS:
 
 === PYTHON CODE REQUIREMENTS ===
 - Clean, readable Python code
-- Add inline comments explaining EACH step (// Step 1: Initialize...)
-- Use descriptive variable names
+- CRITICAL RULE: ONLY write comments that start EXACTLY with "# Step 1:", "# Step 2:", etc.
+- DO NOT write ANY other comments - not on the same line as code, not anywhere else
+- Each "# Step X:" comment must be on its own separate line
+- Use self-explanatory variable names
 - Keep it under 25 lines
-- Format:
+- Example (FOLLOW THIS EXACTLY):
 ```python
 def functionName(params):
-    # Step 1: Describe what this does
-    code here
+    # Step 1: Initialize counter
+    count = 0
 
-    # Step 2: Next step
-    more code
+    # Step 2: Process each item
+    for item in items:
+        count += item
+
+    # Step 3: Return result
+    return count
 ```
 
 === TYPESCRIPT CODE REQUIREMENTS ===
 - Equivalent TypeScript solution
-- SAME logic and comments as Python
+- CRITICAL RULE: ONLY write comments that start EXACTLY with "// Step 1:", "// Step 2:", etc.
+- DO NOT write ANY other comments - not on the same line as code, not anywhere else
+- Each "// Step X:" comment must be on its own separate line
 - Use proper TypeScript types
-- Format:
+- Example (FOLLOW THIS EXACTLY):
 ```typescript
 function functionName(params: type[]): returnType {{
-    // Step 1: Describe what this does (SAME as Python)
-    code here
+    // Step 1: Initialize counter
+    let count: number = 0;
 
-    // Step 2: Next step (SAME as Python)
-    more code
+    // Step 2: Process each item
+    for (const item of items) {{
+        count += item;
+    }}
+
+    // Step 3: Return result
+    return count;
 }}
 ```
 
 === EXPLANATION REQUIREMENTS ===
-Write a DETAILED explanation for beginners:
+CRITICAL: Your ENTIRE explanation must be MAXIMUM 2200 characters. LinkedIn limit is 3000 but we need safety margin.
 
-Structure:
-1. THE PROBLEM IN SIMPLE WORDS (2-3 sentences with analogy)
-   Example: "Think of this like organizing books on a shelf..."
+WRITE A SUPER CONCISE EXPLANATION:
 
-2. LIVE WALKTHROUGH WITH EXAMPLE
-   - Use simple example: [2, 7, 11, 15], target = 9
-   - Walk through STEP BY STEP what the code does
-   - Show what variables hold at each step
-   - Example format:
-     "Step 1: We create an empty dictionary 'seen' to remember numbers
-      seen = {{}}
+🎯 THE PROBLEM (30-50 words max)
+One sentence with analogy. That's it.
 
-      Step 2: Look at first number: 2
-      - We need 9, we have 2, so we need 7
-      - Is 7 in our 'seen' dict? No
-      - So we save: seen[2] = 0 (position)
+💡 THE IDEA (50-80 words max)
+What's the core strategy in plain English?
 
-      Step 3: Look at second number: 7..."
+📝 QUICK EXAMPLE (100-150 words max)
+Tiny example: nums=[2,7,11,15], target=9
+Show 3 steps:
+"Step 1: Empty dict
+Step 2: See 2, need 7, save 2
+Step 3: See 7, found it!"
 
-3. THE CODE BREAKDOWN
-   - Reference specific line numbers from the code
-   - Explain WHY each step matters
-   - Connect to the comments in the code
+⚡ WHY IT WORKS (40-60 words max)
+The insight + Time O(?) Space O(?)
 
-4. WHY THIS WORKS
-   - The "aha!" moment
-   - Time/Space complexity in simple terms
+🎓 TIP (20-30 words max)
+One pattern to remember
 
-5. TIPS FOR BEGINNERS
-   - Common mistakes to avoid
-   - How to recognize this pattern in other problems
-
-CRITICAL RULES:
-- NO markdown formatting (no **, __, ```)
-- Make it CONVERSATIONAL and ENCOURAGING
-- Use "you", "we", "let's"
-- REFERENCE the comments in your code (e.g., "In Step 1 of the code...")
-- Keep explanation under 2000 characters
-- Be SPECIFIC with examples
+ABSOLUTE REQUIREMENTS:
+- TOTAL LENGTH: 1800-2200 characters MAX
+- Count your characters as you write!
+- NO markdown formatting
+- Use emojis for headers
+- Be BRIEF and punchy
+- Twitter thread style
+- If you write more than 2200 chars, STOP and cut content
 
 OUTPUT FORMAT:
 === PYTHON ===
@@ -159,7 +162,22 @@ Problem #{problem['id']}: {problem['title']}
             # Clean explanation
             explanation = self._clean_formatting(explanation)
 
-            logger.info(f"Generated complete solution for: {problem['title']}")
+            # Smart truncation for LinkedIn (max 3000, target 2400)
+            if len(explanation) > 2400:
+                logger.warning(f"Explanation too long ({len(explanation)} chars), smartly truncating to 2400")
+                # Find last complete sentence before 2350 chars
+                truncate_point = 2350
+                last_period = explanation.rfind('.', 0, truncate_point)
+                last_exclaim = explanation.rfind('!', 0, truncate_point)
+                last_question = explanation.rfind('?', 0, truncate_point)
+
+                end_point = max(last_period, last_exclaim, last_question)
+                if end_point > 2000:  # Only truncate at sentence if it's reasonable
+                    explanation = explanation[:end_point + 1]
+                else:
+                    explanation = explanation[:2397] + "..."
+
+            logger.info(f"Generated complete solution for: {problem['title']} ({len(explanation)} chars)")
             return {
                 'python_code': python_code.strip(),
                 'typescript_code': typescript_code.strip(),
